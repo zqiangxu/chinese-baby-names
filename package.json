@@ -4,6 +4,7 @@
   "description": "chinese baby names",
   "main": "index.js",
   "scripts": {
+    "test": "node test/s2t.js"
   },
   "repository": {
     "type": "git",
@@ -19,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/zqiangxu/baby-names/issues"
   },
-  "homepage": "https://github.com/zqiangxu/baby-names#readme"
+  "homepage": "https://github.com/zqiangxu/baby-names#readme",
+  "dependencies": {
+    "node-opencc": "^2.0.1"
+  }
 }
