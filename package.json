@@ -2,9 +2,11 @@
   "name": "baby-names",
   "version": "1.0.0",
   "description": "chinese baby names",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "node test/s2t.js"
+    "test": "node test/s2t.js",
+    "build": "rollup -c rollup.config.js",
+    "dev": "rollup -c rollup.config.js -w"
   },
   "repository": {
     "type": "git",
@@ -22,7 +24,16 @@
   },
   "homepage": "https://github.com/zqiangxu/baby-names#readme",
   "dependencies": {
-    "@types/node": "^18.15.10",
     "node-opencc": "^2.0.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/node": "^18.15.10",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "rollup": "^3.20.2",
+    "rollup-plugin-copy": "^3.4.0"
   }
 }

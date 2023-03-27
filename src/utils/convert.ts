@@ -13,3 +13,11 @@ import opencc from 'node-opencc';
 export function simplifiedToTraditional(text: string) {
     return opencc.simplifiedToTraditional(text);
 }
+
+/**
+ * 繁体转简体
+ * @param text
+ */
+export function traditionalToSimplified(text: string) {
+    return opencc.traditionalToSimplified(text);
+}

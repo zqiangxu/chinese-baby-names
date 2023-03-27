@@ -1,9 +1,15 @@
 module.exports = {
-  extends: ["prettier", "eslint:recommended", "plugin:prettier/recommended"],
+  extends: [
+    'prettier',
+    'eslint:recommended',
+    'plugin:prettier/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+  ],
   parserOptions: {
-    ecmaVersion: "latest",
+    ecmaVersion: 'latest',
   },
-  plugins: ["prettier"],
+  plugins: ['prettier', '@typescript-eslint'],
   env: {
     node: true,
     es6: true,
@@ -12,8 +18,8 @@ module.exports = {
   plugins: [],
   globals: {},
   rules: {
-    "no-console": "error",
-    "prettier/prettier": "error",
-    quotes: ["error", "single"],
+    'no-console': 'error',
+    'prettier/prettier': 'error',
+    quotes: ['error', 'single'],
   },
 };
