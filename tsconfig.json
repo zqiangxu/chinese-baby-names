@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+      "outDir": "lib",
+      "sourceMap": false,
+      "target": "es5",
+      "lib": ["dom", "es2018", "es2015"],
+      "allowSyntheticDefaultImports": true,
+      "experimentalDecorators": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "esModuleInterop": true,
+      "downlevelIteration": true,
+      "baseUrl": "./",
+      "declaration": true,
+      "declarationDir": "types",
+      "emitDeclarationOnly": true,
+      "typeRoots": [
+          "./typings",
+          "./node_modules/@types"
+      ]
+    },
+    "include": [
+      "./src/**/*",
+      "./typings/**/*"
+    ],
+    "exclude": ["node_modules", "types"]
+}
