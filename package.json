@@ -1,0 +1,23 @@
+{
+  "name": "baby-names",
+  "version": "1.0.0",
+  "description": "chinese baby names",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zqiangxu/baby-names.git"
+  },
+  "keywords": [
+    "chinese",
+    "baby",
+    "names"
+  ],
+  "author": "zqiangxu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zqiangxu/baby-names/issues"
+  },
+  "homepage": "https://github.com/zqiangxu/baby-names#readme"
+}
