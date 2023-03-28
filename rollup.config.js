@@ -5,7 +5,7 @@ const copy = require('rollup-plugin-copy');
 const pkg = require('./package.json');
 
 module.exports = {
-  input: 'src/main.ts',
+  input: 'src/index.ts',
   plugins: [
     resolve({
       preferBuiltins: false,

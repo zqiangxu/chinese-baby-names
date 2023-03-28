@@ -1,33 +1,10 @@
-import { readLocalData } from './utils/database';
-const stroke_dic: { [key: string]: number } = {};
+import { Database } from './database';
 
-// 笔画
-const data1 = readLocalData('stoke.dat');
-for (let string of data1) {
-  const temp = string.split('|');
-  if (temp[2]) {
-    temp[2] = temp[2].replace('n', '');
-    stroke_dic[temp[1]] = parseInt(temp[2]);
-  }
-}
 
-const split_dic: { [key: string]: string[] } = {};
+const stroke_dic: { [key: string]: number } = Database.getStoke();
+const split_dic: { [key: string]: string[] } = Database.chaizi();
 
-// 拆字. split_dic
-const data2 = readLocalData('chaizi.dat');
-for (let string of data2) {
-  const temp = string.split(/s/);
-  if (temp.length < 2) {
-    continue;
-  }
-  const split_list: string[] = [];
-  for (let index = 1; index < temp.length - 1; index++) {
-    split_list.push(temp[index]);
-  }
-  split_dic[temp[0]] = split_list;
-}
-
-export function get_stroke_number(word: string): number {
+export function getStrokeNumber(word: string): number {
   let total = 0;
   for (let i of word) {
     if (i.includes('一')) {
@@ -54,11 +31,10 @@ export function get_stroke_number(word: string): number {
       total += stroke_dic[i];
     }
   }
-  return get_final_number(word, total);
+  return getFinalNumber(word, total);
 }
 
-
-function get_final_number(word: string, number: number): number {
+function getFinalNumber(word: string, number: number): number {
   for (let i of word) {
     if (i in split_dic) {
       const splits = split_dic[i];

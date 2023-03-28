@@ -1,65 +1,111 @@
-import {
-  name_source,
-  last_name,
-  dislike_words,
-  min_stroke_count,
-  max_stroke_count,
-  allow_general,
-  name_validate,
-  gender,
-  check_name,
-  check_name_resource,
-} from './config';
+import fs from 'fs';
+import { PoetryType } from './enums/PoetryType';
 import { Name } from './name';
-import { check_resource, get_source } from './name_set';
-import { check_wuge_config, get_stroke_list } from './wuge';
+import { get_source } from './name_set';
+import { getStrokeList } from './wuge';
 
-function contain_bad_word(first_name: string): boolean {
-  for (let word of first_name) {
-    if (dislike_words.includes(word)) {
-      return true;
-    }
-  }
-  return false;
+const DEFAULT_MIN_STROKE_COUNT = 3;
+const DEFAULT_MAX_STROKE_COUNT = 30;
+const DEFAULT_ALLOW_GENERAL = false;
+const DEFAULT_NAME_VALIDATE = false;
+const DEFAULT_CALCULATE_THREE_TALENTS_AND_FIVE_SQUARES = false;
+
+
+interface GeneratorConfig {
+  source?: PoetryType;
+  surname: string;
+  dislikeWords?: string[];
+  // 最小笔画数
+  minStrokeCount?: number;
+  // 最大笔画数
+  maxStrokeCount?: number;
+  // 允许使用中吉，开启后将生成包含中吉配置的名字，生成的名字会更多
+  allowGeneral?: boolean;
+  // 是否筛选名字，仅输出名字库中存在的名字，可以过滤明显不合适的名字
+  nameValidate?: boolean;
+  // 是否筛选性别，男/女，空则不筛选，仅当开启名字筛选时有效
+  gender?: string;
+  // 是否计算三才五格
+  // @description 忽略命名
+  calculateThreeTalentsAndFiveSquares?: boolean; 
 }
 
-if (check_name.length === 3) {
-  // 查看姓名配置
-  check_wuge_config(check_name);
-  if (check_name_resource) {
-    check_resource(check_name);
+interface GeneratorResult {
+  firstName?:string;
+  lastName?:string;
+  // 诗歌来源
+  source?: string;
+  // 匹配的名字在诗歌中的索引
+  matched?: number[];
+}
+
+export class BabyName {
+  private names: Name[];
+  private config: GeneratorConfig;
+
+  public static generate(config: GeneratorConfig): GeneratorResult[] {
+    const instance = new BabyName(config);
+    return instance.generate();
   }
-  console.log('>>输出完毕');
-} else {
-  // 起名
-  const names: Name[] = [];
-  const fs = require('fs');
-  const stream = fs.createWriteStream('names.txt', { flags: 'a', encoding: 'utf-8' });
-  for (let i of get_source(name_source, name_validate, get_stroke_list(last_name, allow_general))) {
-    if (
-      i.stroke_number1 < min_stroke_count ||
-      i.stroke_number1 > max_stroke_count ||
-      i.stroke_number2 < min_stroke_count ||
-      i.stroke_number2 > max_stroke_count
-    ) {
-      // 笔画数过滤
-      continue;
-    }
-    if (name_validate && gender !== '' && i.gender !== gender && i.gender !== '双' && i.gender !== '未知') {
-      // 性别过滤
-      continue;
-    }
-    if (contain_bad_word(i.first_name)) {
-      // 不喜欢字过滤
-      continue;
-    }
-    names.push(i);
+
+  private constructor(config: GeneratorConfig) {
+    console.error('generator');
+    this.config = {
+      dislikeWords: [],
+      minStrokeCount: DEFAULT_MIN_STROKE_COUNT, 
+      maxStrokeCount: DEFAULT_MAX_STROKE_COUNT, 
+      allowGeneral: DEFAULT_ALLOW_GENERAL,
+      nameValidate: DEFAULT_NAME_VALIDATE, 
+      calculateThreeTalentsAndFiveSquares: DEFAULT_CALCULATE_THREE_TALENTS_AND_FIVE_SQUARES,
+      ...config
+    };
   }
-  console.log('>>输出结果...');
-  names.sort();
-  for (let i of names) {
-    stream.write(last_name + i.toString() + 'n');
+
+  private generate(): GeneratorResult[] {
+    const names: Name[] = [];
+    const { source, nameValidate, surname, allowGeneral, minStrokeCount, maxStrokeCount, gender } = this.config;
+    for (let i of get_source(source, getStrokeList(surname, allowGeneral))) {
+      if (
+        i.stroke_number1 < minStrokeCount ||
+        i.stroke_number1 > maxStrokeCount ||
+        i.stroke_number2 < minStrokeCount ||
+        i.stroke_number2 > maxStrokeCount
+      ) {
+        // 笔画数过滤
+        continue;
+      }
+      if (nameValidate && gender !== '' && i.gender !== gender && i.gender !== '双' && i.gender !== '未知') {
+        // 性别过滤
+        continue;
+      }
+      if (this.containBadWord(i.first_name)) {
+        // 不喜欢字过滤
+        continue;
+      }
+      names.push(i);
+    }
+
+    console.log('>>输出结果...:', names);
+    const stream = fs.createWriteStream('names.txt', { flags: 'a', encoding: 'utf-8' });
+    for (let i of names) {
+      stream.write(surname + i.toString() + '\n');
+    }
+    stream.end()
+    console.log('>>输出完毕，请查看「names.txt」文件');;
+    return [];
   }
-  stream.end();
-  console.log('>>输出完毕，请查看「names.txt」文件');
+
+  private containBadWord(first_name: string): boolean {
+    const { dislikeWords } = this.config;
+    if (!Array.isArray(dislikeWords)) {
+      return false;
+    }
+
+    for (let word of first_name) {
+      if (dislikeWords.includes(word)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

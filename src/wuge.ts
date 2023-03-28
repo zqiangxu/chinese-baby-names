@@ -1,4 +1,4 @@
-import { get_stroke_number } from './stroke_number';
+import { getStrokeNumber } from './utils/stoke';
 import { simplifiedToTraditional } from './utils/convert';
 
 const stroke_goods = [
@@ -14,11 +14,11 @@ const stroke_bads = [
 
 const stroke_list: number[][] = [];
 
-export function get_stroke_list(last_name: string, allow_general: boolean): number[][] {
+export function getStrokeList(last_name: string, allow_general: boolean): number[][] {
   console.log('>>计算笔画组合...');
   // 姓氏转繁体
   last_name = simplifiedToTraditional(last_name);
-  const n = get_stroke_number(last_name);
+  const n = getStrokeNumber(last_name);
   for (let i = 1; i < 81; i++) {
     for (let j = 1; j < 81; j++) {
       // 天格
@@ -31,8 +31,9 @@ export function get_stroke_list(last_name: string, allow_general: boolean): numb
       const zong = n + i + j;
       // 外格
       const wai = zong - ren + 1;
+      
       if (stroke_goods.includes(ren) && stroke_goods.includes(di) && stroke_goods.includes(zong) && stroke_goods.includes(wai)) {
-        if (check_sancai_good([tian, ren, di], allow_general)) {
+        if (checkSancaiGood([tian, ren, di], allow_general)) {
           stroke_list.push([i, j]);
         }
       } else if (
@@ -42,7 +43,7 @@ export function get_stroke_list(last_name: string, allow_general: boolean): numb
         (stroke_goods.includes(zong) || stroke_generals.includes(zong)) &&
         (stroke_goods.includes(wai) || stroke_generals.includes(wai))
       ) {
-        if (check_sancai_good([tian, ren, di], allow_general)) {
+        if (checkSancaiGood([tian, ren, di], allow_general)) {
           stroke_list.push([i, j]);
         }
       }
@@ -190,8 +191,8 @@ const wuxing_bads = [
 ];
 
 // 检查三才配置吉
-function check_sancai_good(counts: number[], allow_general: boolean): boolean {
-  const config = get_sancai_config(counts);
+function checkSancaiGood(counts: number[], allow_general: boolean): boolean {
+  const config = getSancaiConfig(counts);
   if (wuxing_goods.includes(config)) {
     return true;
   } else if (allow_general && wuxing_generals.includes(config)) {
@@ -201,7 +202,7 @@ function check_sancai_good(counts: number[], allow_general: boolean): boolean {
 }
 
 // 获取对应五行
-export function get_wuxing(count: number): string {
+export function getWuxing(count: number): string {
   count = count % 10;
   if (count === 1 || count === 2) {
     return '木';
@@ -216,7 +217,7 @@ export function get_wuxing(count: number): string {
   }
 }
 
-export function check_wuge_config(name: string): void {
+export function checkWugeConfig(name: string): void {
   if (name.length !== 3) {
     return;
   }
@@ -236,26 +237,28 @@ export function check_wuge_config(name: string): void {
   // 外格
   const wai = zong - ren + 1;
   // 三才配置
-  const sancai_config = get_sancai_config([tian, ren, di]);
+  const sancai_config = getSancaiConfig([tian, ren, di]);
   // 输出结果
-  console.log('n');
-  console.log(name + 'n');
-  console.log(complex_name + ' ' + xing + ' ' + ming1 + ' ' + ming2 + 'n');
-  console.log('天格t' + tian);
-  console.log('人格t' + ren + 't' + getStrokeType(ren));
-  console.log('地格t' + di + 't' + getStrokeType(di));
-  console.log('总格t' + zong + 't' + getStrokeType(zong));
-  console.log('外格t' + wai + 't' + getStrokeType(wai));
-  console.log('n三才t' + sancai_config + 't' + get_sancai_type(sancai_config) + 'n');
+  console.log('\n');
+  console.log(name + '\n');
+  console.log(complex_name + ' ' + xing + ' ' + ming1 + ' ' + ming2 + '\n');
+  console.log('天格\t' + tian);
+  console.log('人格\t' + ren + '\t' + getStrokeType(ren));
+  console.log('地格\t' + di + '\t' + getStrokeType(di));
+  console.log('总格\t' + zong + '\t' + getStrokeType(zong));
+  console.log('外格\t' + wai + '\t' + getStrokeType(wai));
+  console.log('三才\t' + sancai_config + '\t' + getSancaiType(sancai_config) + '\n');
 }
+
 // 获取三才配置
-function get_sancai_config(counts: number[]): string {
+function getSancaiConfig(counts: number[]): string {
   let config = '';
   for (const count of counts) {
     config += getWuxing(count);
   }
   return config;
 }
+
 function getStrokeType(stroke: number): string {
   if (stroke_goods.includes(stroke)) {
     return '大吉';
@@ -267,7 +270,8 @@ function getStrokeType(stroke: number): string {
     return '';
   }
 }
-function get_sancai_type(config: string): string {
+
+function getSancaiType(config: string): string {
   if (wuxing_goods.includes(config)) {
     return '大吉';
   } else if (wuxing_generals.includes(config)) {
@@ -277,20 +281,4 @@ function get_sancai_type(config: string): string {
   } else {
     return '';
   }
-}
-function getWuxing(stroke: number): string {
-  return '金水木火土'[stroke % 5];
-}
-function getStrokeNumber(char: string): number {
-  if (char.charCodeAt(0) < 256) {
-    return 0;
-  }
-  const str = char.normalize('NFKC');
-  let count = 0;
-  for (const ch of str) {
-    if (ch.charCodeAt(0) >= 19968 && ch.charCodeAt(0) <= 40869) {
-      count += 1;
-    }
-  }
-  return count > 0 ? count : 1;
 }

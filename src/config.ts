@@ -1,7 +1,7 @@
 // # 选择词库
 // # 0: "默认", 1: "诗经", 2: "楚辞", 3: "论语",
 // # 4: "周易", 5: "唐诗", 6: "宋诗", 7: "宋词"
-export const name_source = 6 
+export const name_source = 4
 
 // # 姓，仅支持单姓
 export const last_name = "林"
@@ -19,14 +19,14 @@ export const max_stroke_count = 30
 export const allow_general = false 
 
 // # 是否筛选名字，仅输出名字库中存在的名字，可以过滤明显不合适的名字
-export const name_validate = true 
+export const name_validate = false; 
 
 // # 是否筛选性别，男/女，空则不筛选，仅当开启名字筛选时有效
 export const gender = ""
 
 // # 填入姓名，查看三才五格配置，仅支持单姓复名
 // # 如果要起名，请保持该值为空
-export const check_name = ""
+export const check_name = "许博言"
 
 // # 是否显示名字来源
-export const check_name_resource = false
+export const check_name_resource = true
