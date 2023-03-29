@@ -7,4 +7,5 @@ console.error('generator:');
 BabyName.generate({
    source: PoetryType.ZHOU_YI,
    surname: '许',
+   count: 20,
 });

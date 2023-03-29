@@ -118,19 +118,19 @@ export class Database {
     };
   }
 
-  public static getStoke(): Record<string, number> {
-    const stokes = readLocalData('stoke.dat');
-    const dic = {};
+  public static getStrokeDirectory(): Record<string, number> {
+    const stokes = readLocalData('stroke.dat');
+    const directory = {};
     stokes.forEach((stoke) => {
       const [, name, count] = stoke.split('|');
-      dic[name] = parseInt(count);
+      directory[name] = parseInt(count);
     });
-    return dic;
+    return directory;
   }
 
-  public static chaizi(): Record<string, string[]> {
-   const lines = readLocalData('chaizi.dat');
-   const dic = {};
+  public static getCharSplitDirectory(): Record<string, string[]> {
+   const lines = readLocalData('char-split.dat');
+   const directory = {};
 
    lines.forEach((line) => {
       const blocks = line.split(/s/);
@@ -138,9 +138,9 @@ export class Database {
          return;
       }
       const [, name, ...sub] = blocks;
-      dic[name] = sub;
+      directory[name] = sub;
    });
 
-   return dic;
+   return directory;
   }
 }

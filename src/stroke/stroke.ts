@@ -3,8 +3,8 @@ import { simplifiedToTraditional } from '../utils/convert';
 import { Database } from '../utils/database';
 import { STROKE_BADS, STROKE_GENERALS, STROKE_GOODS } from './constant';
 
-const stroke_dic: { [key: string]: number } = Database.getStoke();
-const split_dic: { [key: string]: string[] } = Database.chaizi();
+const STROKE_DIC: { [key: string]: number } = Database.getStrokeDirectory();
+const SPLIT_DIC: { [key: string]: string[] } = Database.getCharSplitDirectory();
 
 const NumStrokeNumber: Record<string, number> = {
   '一': 1,
@@ -25,7 +25,7 @@ const NumStrokeNumber: Record<string, number> = {
  * @param allowGeneral 是否允许中吉
  * @returns 
  */
- export function getStrokeList(surname: string, allowGeneral: boolean): [number, number][] {
+ export function getGoodStrokeList(surname: string, allowGeneral: boolean): [number, number][] {
   const strokeList: [number, number][] = [];
   console.log('>>计算笔画组合...');
 
@@ -93,7 +93,7 @@ export function getStrokeNumber(word: string): number {
     if (NumStrokeNumber[char]) {
       total += NumStrokeNumber[char];
     } else {
-      total += stroke_dic[char];
+      total += STROKE_DIC[char];
     }
   }
 
@@ -102,8 +102,8 @@ export function getStrokeNumber(word: string): number {
 
 function getFinalNumber(word: string, number: number): number {
   for (let char of word) {
-    if (char in split_dic) {
-      const splits = split_dic[char];
+    if (char in SPLIT_DIC) {
+      const splits = SPLIT_DIC[char];
       if (splits.includes('氵')) {
         // 水
         number += 1;

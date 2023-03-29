@@ -1,18 +1,18 @@
 import { isChinese } from '../utils/isChinese';
 import { PoetryType } from '../enums/PoetryType';
-import { Name } from './name';
+import { Name, NameObject } from './name';
 import { Database, DatabaseStorages, PoetCounter } from '../utils/database';
 import { getStrokeNumber } from '../stroke/stroke';
 
-/**
- * Generator
- * @param source
- * @param strokes
- * @returns
- */
 interface GeneratorConfig {
   source: PoetryType;
-  strokes: number[][];
+  goodStrokeList: number[][];
+  // 最小笔画数
+  minStrokeCount: number;
+  // 最大笔画数
+  maxStrokeCount: number;
+  // 过滤掉不喜欢的名字
+  dislikeWords: string[];
 }
 
 export class NameGenerator {
@@ -30,7 +30,7 @@ export class NameGenerator {
     this.count = count;
   }
 
-  private batch(): Name[] {
+  private batch(): NameObject[] {
     let names: Name[] = [];
 
     const { source } = this.config;
@@ -64,16 +64,16 @@ export class NameGenerator {
         break;
     }
 
-    return names;
+    return names.map(name => name.toObject());
   }
 
   private checkAndAddNames(names: Name[], sentences: string[]): boolean {
     const { count, config } = this;
-    const { strokes: stroke_list } = config;
+    const { goodStrokeList } = config;
     for (const sentence of sentences) {
       let sentenceStr = sentence.trim();
 
-      // 转换笔画数
+      // 获取每个单词的笔画数
       const strokes: number[] = [];
       for (const ch of sentenceStr) {
         if (isChinese(ch)) {
@@ -83,17 +83,27 @@ export class NameGenerator {
         }
       }
 
-      // 判断是否包含指定笔画数
-      for (const stroke of stroke_list) {
+      // 获取满足条件(吉利)的笔画数
+      for (const stroke of goodStrokeList) {
         if (strokes.includes(stroke[0]) && strokes.includes(stroke[1])) {
           const index0 = strokes.indexOf(stroke[0]);
           const index1 = strokes.indexOf(stroke[1]);
+
           if (index0 < index1) {
             const name0 = sentenceStr[index0];
             const name1 = sentenceStr[index1];
 
-            console.error('name:0', name0, 'name1:', name1);
-            names.push(new Name(name0 + name1, sentenceStr, ''));
+            console.error(name0 + name1);
+            if (this.isBadName(name0 + name1)) {
+              console.error('isBad?:', name0 + name1);
+              return;
+            }
+
+
+            // 取出这两个字
+            names.push(new Name(name0 + name1, sentenceStr, [index0, index1]));
+
+            // 超出数量
             if (names.length >= count) {
               return false;
             }
@@ -101,5 +111,37 @@ export class NameGenerator {
         }
       }
     }
+  }
+
+  private isBadName(name: string): boolean {
+    const { config } = this;
+    const { minStrokeCount, maxStrokeCount } = config;
+
+    for( let char of name.split('')) {
+      const stroke = getStrokeNumber(char);
+      if (stroke < minStrokeCount || stroke > maxStrokeCount) {
+        return true;
+      }
+    }
+
+    if (this.containBadWord(name)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private containBadWord(name: string): boolean {
+    const { dislikeWords } = this.config;
+    if (!Array.isArray(dislikeWords)) {
+      return false;
+    }
+
+    for (let char of name) {
+      if (dislikeWords.includes(char)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

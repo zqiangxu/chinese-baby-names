@@ -1,5 +1,5 @@
-import { getStrokeNumber, getStrokeType } from 'src/stroke/stroke';
-import { simplifiedToTraditional } from 'src/utils/convert';
+import { getStrokeNumber, getStrokeType } from '../stroke/stroke';
+import { simplifiedToTraditional } from '../utils/convert';
 import { getSancaiConfig } from './sancai';
 
 /**
