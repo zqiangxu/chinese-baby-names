@@ -1,5 +1,5 @@
-import { getStrokeNumber } from './utils/stoke';
-import { traditionalToSimplified } from './utils/convert';
+import { getStrokeNumber } from '../stroke/stroke';
+import { traditionalToSimplified } from '../utils/convert';
 
 function hash(str: string): number {
   let hash = 0;

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { PoetryType } from './enums/PoetryType';
-import { Name } from './name';
-import { get_source } from './name_set';
+import { Name } from './name/name';
+import { NameGenerator } from './name/NameGenerator';
 import { getStrokeList } from './wuge';
 
 const DEFAULT_MIN_STROKE_COUNT = 3;
@@ -9,7 +9,7 @@ const DEFAULT_MAX_STROKE_COUNT = 30;
 const DEFAULT_ALLOW_GENERAL = false;
 const DEFAULT_NAME_VALIDATE = false;
 const DEFAULT_CALCULATE_THREE_TALENTS_AND_FIVE_SQUARES = false;
-
+const DEFAULT_GENERATOR_NAMES_COUNT = 1;
 
 interface GeneratorConfig {
   source?: PoetryType;
@@ -28,6 +28,8 @@ interface GeneratorConfig {
   // 是否计算三才五格
   // @description 忽略命名
   calculateThreeTalentsAndFiveSquares?: boolean; 
+  // 需要生成的条数. 默认为 1 条
+  count?: number;
 }
 
 interface GeneratorResult {
@@ -57,14 +59,21 @@ export class BabyName {
       allowGeneral: DEFAULT_ALLOW_GENERAL,
       nameValidate: DEFAULT_NAME_VALIDATE, 
       calculateThreeTalentsAndFiveSquares: DEFAULT_CALCULATE_THREE_TALENTS_AND_FIVE_SQUARES,
+      count: DEFAULT_GENERATOR_NAMES_COUNT,
       ...config
     };
   }
 
   private generate(): GeneratorResult[] {
     const names: Name[] = [];
-    const { source, nameValidate, surname, allowGeneral, minStrokeCount, maxStrokeCount, gender } = this.config;
-    for (let i of get_source(source, getStrokeList(surname, allowGeneral))) {
+    const { source, nameValidate, surname, allowGeneral, minStrokeCount, maxStrokeCount, gender, count } = this.config;
+    const strokes = getStrokeList(surname, allowGeneral);
+    const nameList = NameGenerator.batch({
+      source,
+      strokes,
+    }, count);
+
+    for (let i of nameList) {
       if (
         i.stroke_number1 < minStrokeCount ||
         i.stroke_number1 > maxStrokeCount ||

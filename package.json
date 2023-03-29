@@ -4,7 +4,7 @@
   "description": "chinese baby names",
   "main": "lib/index.js",
   "scripts": {
-    "test": "node test/s2t.js",
+    "test": "node lib/index.js",
     "build": "rollup -c rollup.config.js",
     "dev": "rollup -c rollup.config.js -w"
   },

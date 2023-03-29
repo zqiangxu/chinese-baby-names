@@ -91,14 +91,14 @@ export const DatabaseStorages: Record<
 };
 
 export class Database {
-  public static getJsonData(locate: string, contentKey: string, callback: (contents: string[]) => void | boolean): void {
+  public static getJsonData(locate: string, contentKey: string, callback: (sentences: string[]) => void | boolean): void {
     const data = require(`./database/${locate}.json`);
     for (const item of data)  {
       for (const content of item[contentKey]) {
         // 转繁体
         const string = simplifiedToTraditional(content);
-        const contents = string.split(/[！？，。,.?!\n]/);
-        const isContinue = callback(contents);
+        const sentences = string.split(/[！？，。,.?!\n]/);
+        const isContinue = callback(sentences);
         if (isContinue === false) {
           return;
         }
@@ -106,12 +106,12 @@ export class Database {
     };
   }
 
-  public static getTextData(locate: string, callback: (contents: string[]) => void | boolean): void {
+  public static getTextData(locate: string, callback: (sentences: string[]) => void | boolean): void {
     const lines = readLocalData(`${locate}.txt`);
     for(const line of lines) {
       const string = simplifiedToTraditional(line);
-      const contents = string.split(/[！？，。,.?!\n]/);
-      const isContinue = callback(contents);
+      const sentences = string.split(/[！？，。,.?!\n]/);
+      const isContinue = callback(sentences);
       if (isContinue === false) {
          return;
       }
