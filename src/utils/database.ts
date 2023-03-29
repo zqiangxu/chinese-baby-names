@@ -109,7 +109,9 @@ export class Database {
   public static getTextData(locate: string, callback: (sentences: string[]) => void | boolean): void {
     const lines = readLocalData(`${locate}.txt`);
     for(const line of lines) {
+      const startTime = Date.now();
       const string = simplifiedToTraditional(line);
+      console.error('cost:', Date.now() - startTime + 'ms');
       const sentences = string.split(/[！？，。,.?!\n]/);
       const isContinue = callback(sentences);
       if (isContinue === false) {
