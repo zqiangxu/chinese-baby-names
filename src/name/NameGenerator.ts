@@ -3,6 +3,7 @@ import { PoetryType } from '../enums/PoetryType';
 import { Name, NameObject } from './name';
 import { Database, DatabaseStorages, PoetCounter } from '../utils/database';
 import { getStrokeNumber } from '../stroke/stroke';
+import { Gender } from '../enums/Gender';
 
 interface GeneratorConfig {
   source: PoetryType;
@@ -94,14 +95,16 @@ export class NameGenerator {
             const name1 = sentenceStr[index1];
 
             console.error(name0 + name1);
-            if (this.isBadName(name0 + name1)) {
-              console.error('isBad?:', name0 + name1);
+
+            const babyName = name0 + name1;
+            const gender = this.getGender(babyName);
+             if (!gender) {
+              console.error('isBad?:', babyName);
               return;
             }
 
-
             // 取出这两个字
-            names.push(new Name(name0 + name1, sentenceStr, [index0, index1]));
+            names.push(new Name(babyName, sentenceStr, [index0, index1], gender));
 
             // 超出数量
             if (names.length >= count) {
@@ -113,22 +116,34 @@ export class NameGenerator {
     }
   }
 
-  private isBadName(name: string): boolean {
+  /**
+   * 获取性别. 其实主要是为了过滤一些无效的数据
+   * @param name 
+   */
+  private getGender(name: string): Gender {
     const { config } = this;
     const { minStrokeCount, maxStrokeCount } = config;
 
+    // 过滤掉笔画
     for( let char of name.split('')) {
       const stroke = getStrokeNumber(char);
       if (stroke < minStrokeCount || stroke > maxStrokeCount) {
-        return true;
+        return null;
       }
     }
 
+    // 过滤掉黑名单数据
     if (this.containBadWord(name)) {
-      return true;
+      return null;
     }
 
-    return false;
+    // 过滤掉不喜欢的名字
+    const gender = Database.namesDirectory[name];
+    if (!gender) {
+      return null;
+    }
+
+    return gender;
   }
 
   private containBadWord(name: string): boolean {

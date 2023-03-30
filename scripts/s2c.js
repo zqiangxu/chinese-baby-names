@@ -22,4 +22,8 @@ function simplifiedToTraditional(resourcePath) {
   });
 }
 
-simplifiedToTraditional(path.join(__dirname, '../src/database/shijing/shijing.json'));
+// simplifiedToTraditional(path.join(__dirname, '../src/database/chuci/chuci.json'));
+for (let i = 0; i < 22; i++) {
+  simplifiedToTraditional(path.join(__dirname, '../src/database/ci.song/ci.song.' + i * 1000 + '.json'));
+}
+// simplifiedToTraditional(path.join(__dirname, '../src/database/shijing/shijing.json'));

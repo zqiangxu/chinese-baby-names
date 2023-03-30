@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Gender } from '../enums/Gender';
 import { PoetryType } from '../enums/PoetryType';
 import { simplifiedToTraditional } from './convert';
+import { convertGender } from './gender';
 
 /**
  * 读取本地数据
@@ -56,10 +58,6 @@ export const DatabaseStorages: Record<
     locate: string;
   }
 > = {
-  [PoetryType.DEFAULT]: {
-    type: StorageType.DAT,
-    locate: 'names',
-  },
   [PoetryType.SHI_JING]: {
     type: StorageType.JSON,
     locate: 'shijing/shijing',
@@ -91,6 +89,21 @@ export const DatabaseStorages: Record<
 };
 
 export class Database {
+  /**
+   * 拆字字典
+   */
+  public static splitDirectory: Record<string, string[]> = Database.generateCharSplitDirectory();
+
+  /**
+   * 名字字典
+   */  
+  public static namesDirectory: Record<string, Gender> = Database.generateNamesDirectory();
+
+  /**
+   * 笔画字典
+   */
+  public static strokeDirectory: Record<string, number> = Database.generateStrokeDirectory();
+
   public static getJsonData(locate: string, contentKey: string, callback: (sentences: string[]) => void | boolean): void {
     const data = require(`./database/${locate}.json`);
     for (const item of data)  {
@@ -120,9 +133,9 @@ export class Database {
     };
   }
 
-  public static getStrokeDirectory(): Record<string, number> {
+  private static generateStrokeDirectory(): Record<string, number> {
     const stokes = readLocalData('stroke.dat');
-    const directory = {};
+    const directory: Record<string, number> = {};
     stokes.forEach((stoke) => {
       const [, name, count] = stoke.split('|');
       directory[name] = parseInt(count);
@@ -130,9 +143,9 @@ export class Database {
     return directory;
   }
 
-  public static getCharSplitDirectory(): Record<string, string[]> {
+  private static generateCharSplitDirectory(): Record<string, string[]> {
    const lines = readLocalData('char-split.dat');
-   const directory = {};
+   const directory: Record<string, string[]> = {};
 
    lines.forEach((line) => {
       const blocks = line.split(/s/);
@@ -144,5 +157,23 @@ export class Database {
    });
 
    return directory;
+  }
+
+  private static generateNamesDirectory(): Record<string, Gender> {
+    const lines = readLocalData('names.dat');
+    const directory: Record<string, Gender> = {};
+ 
+    lines.forEach((line) => {
+       const blocks = line.split(/,/);
+       if (blocks.length < 2) {
+          return;
+       }
+       const [name, gender] = blocks;
+
+       // 只留名
+       directory[name.trim().substring(0)] = convertGender(gender);
+    });
+ 
+    return directory; 
   }
 }

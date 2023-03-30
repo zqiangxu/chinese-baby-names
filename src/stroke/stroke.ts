@@ -3,9 +3,6 @@ import { simplifiedToTraditional } from '../utils/convert';
 import { Database } from '../utils/database';
 import { STROKE_BADS, STROKE_GENERALS, STROKE_GOODS } from './constant';
 
-const STROKE_DIC: { [key: string]: number } = Database.getStrokeDirectory();
-const SPLIT_DIC: { [key: string]: string[] } = Database.getCharSplitDirectory();
-
 const NumStrokeNumber: Record<string, number> = {
   '一': 1,
   '二': 2,
@@ -93,7 +90,7 @@ export function getStrokeNumber(word: string): number {
     if (NumStrokeNumber[char]) {
       total += NumStrokeNumber[char];
     } else {
-      total += STROKE_DIC[char];
+      total += Database.strokeDirectory[char];
     }
   }
 
@@ -102,8 +99,8 @@ export function getStrokeNumber(word: string): number {
 
 function getFinalNumber(word: string, number: number): number {
   for (let char of word) {
-    if (char in SPLIT_DIC) {
-      const splits = SPLIT_DIC[char];
+    if (char in Database.splitDirectory) {
+      const splits = Database.splitDirectory[char];
       if (splits.includes('氵')) {
         // 水
         number += 1;
