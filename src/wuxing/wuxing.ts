@@ -1,7 +1,17 @@
 import { FiveElement } from "../enums/FiveElement";
 
 /**
- * 获取对应五行
+ * 五行相生相克关系：
+ * 木生火 火生土 土生金 金生水 水生木
+ * 木克土 土克水 水克火 火克金 金克木
+ */
+
+/**
+ * 三才转换为五格
+ * @param count 笔画数
+ * @description
+ * 数字1、2为木，3、4为火，5、6为土，7、8为金，9、10为水，三才数理只计 1-10 的数，超过 10 以上的数，只计个位，个位为0，则计为10
+ * @see {@link http://www.tazzfdc.com/kxnew/160nn9.html}
  */
 export function getWuxing(count: number): FiveElement {
   count = count % 10;

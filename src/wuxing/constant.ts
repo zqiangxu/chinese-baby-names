@@ -1,3 +1,8 @@
+/**
+ * 三才五行吉凶表
+ * @see {@link http://www.360doc.com/document/22/1020/12/68132707_1052459628.shtml}
+ */
+
 // 大吉
 export const WUXING_GOODS = [
   '木木木',

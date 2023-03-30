@@ -1,11 +1,14 @@
+import { Gender } from './enums/Gender';
 import { PoetryType } from './enums/PoetryType';
 import { BabyName } from './main';
 
 export * from './main';
 
-console.error('generator:');
 BabyName.generate({
-   source: PoetryType.ZHOU_YI,
-   surname: '许',
-   count: 20,
+   source: PoetryType.SONG_CI,
+   surname: '王',
+   count: 4,
+   allowGeneral: false,
+   singleNameWeight: 10,
+   gender: Gender.GIRL,
 });

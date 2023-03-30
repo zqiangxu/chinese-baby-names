@@ -4,6 +4,7 @@ import { Gender } from '../enums/Gender';
 import { PoetryType } from '../enums/PoetryType';
 import { simplifiedToTraditional } from './convert';
 import { convertGender } from './gender';
+import { shuffle } from './shuffle';
 
 /**
  * 读取本地数据
@@ -104,14 +105,13 @@ export class Database {
    */
   public static strokeDirectory: Record<string, number> = Database.generateStrokeDirectory();
 
-  public static getJsonData(locate: string, contentKey: string, callback: (sentences: string[]) => void | boolean): void {
+  public static getJsonData(locate: string, contentKey: string, callback: (sentence: string) => void | boolean): void {
     const data = require(`./database/${locate}.json`);
-    for (const item of data)  {
-      for (const content of item[contentKey]) {
+    for (const item of shuffle(data))  {
+      for (const content of shuffle<string>(item[contentKey])) {
         // 转繁体
         const string = simplifiedToTraditional(content);
-        const sentences = string.split(/[！？，。,.?!\n]/);
-        const isContinue = callback(sentences);
+        const isContinue = callback(string.trim());
         if (isContinue === false) {
           return;
         }
@@ -119,14 +119,13 @@ export class Database {
     };
   }
 
-  public static getTextData(locate: string, callback: (sentences: string[]) => void | boolean): void {
+  public static getTextData(locate: string, callback: (sentence: string) => void | boolean): void {
     const lines = readLocalData(`${locate}.txt`);
-    for(const line of lines) {
+    for(const line of shuffle(lines)) {
       const startTime = Date.now();
       const string = simplifiedToTraditional(line);
       console.error('cost:', Date.now() - startTime + 'ms');
-      const sentences = string.split(/[！？，。,.?!\n]/);
-      const isContinue = callback(sentences);
+      const isContinue = callback(string.trim());
       if (isContinue === false) {
          return;
       }
@@ -171,7 +170,7 @@ export class Database {
        const [name, gender] = blocks;
 
        // 只留名
-       directory[name.trim().substring(0)] = convertGender(gender);
+       directory[name.trim().substring(1)] = convertGender(gender);
     });
  
     return directory; 

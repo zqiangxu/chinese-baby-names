@@ -3,9 +3,12 @@ import { PoetryType } from '../enums/PoetryType';
 import { Name, NameObject } from './name';
 import { Database, DatabaseStorages, PoetCounter } from '../utils/database';
 import { getStrokeNumber } from '../stroke/stroke';
+import { numSequenceRandoms } from '../utils/numSequenceRandoms';
 import { Gender } from '../enums/Gender';
 
 interface GeneratorConfig {
+  // 姓
+  surname: string;
   source: PoetryType;
   goodStrokeList: number[][];
   // 最小笔画数
@@ -14,12 +17,20 @@ interface GeneratorConfig {
   maxStrokeCount: number;
   // 过滤掉不喜欢的名字
   dislikeWords: string[];
+  singleNameWeight: number;
+  gender: Gender;
 }
 
 export class NameGenerator {
   private config: GeneratorConfig;
 
   private count: number;
+
+  private names: Name[];
+
+  private singleNameCount: number;
+
+  private uniqueNameSet: Set<string>;
 
   public static batch(config: GeneratorConfig, count?: number) {
     const instance = new NameGenerator(config, count);
@@ -29,35 +40,38 @@ export class NameGenerator {
   private constructor(config: GeneratorConfig, count?: number) {
     this.config = config;
     this.count = count;
+    this.names = [];
+    this.uniqueNameSet = new Set<string>();
+    this.singleNameCount = 0;
   }
 
   private batch(): NameObject[] {
-    let names: Name[] = [];
-
     const { source } = this.config;
     switch (source) {
       case PoetryType.SHI_JING:
       case PoetryType.CHU_CI:
-        Database.getJsonData(DatabaseStorages[source].locate, 'content', (sentences) => {
-          return this.checkAndAddNames(names, sentences);
+        Database.getJsonData(DatabaseStorages[source].locate, 'content', (sentence) => {
+          return this.checkAndAddNames(sentence);
         });
         break;
       case PoetryType.LUN_YU:
-        Database.getJsonData(DatabaseStorages[source].locate, 'paragraphs', (sentences) => {
-          return this.checkAndAddNames(names, sentences);
+        Database.getJsonData(DatabaseStorages[source].locate, 'paragraphs', (sentence) => {
+          return this.checkAndAddNames(sentence);
         });
         break;
       case PoetryType.ZHOU_YI:
-        Database.getTextData(DatabaseStorages[source].locate, (sentences) => {
-          return this.checkAndAddNames(names, sentences);
+        Database.getTextData(DatabaseStorages[source].locate, (sentence) => {
+          return this.checkAndAddNames(sentence);
         });
         break;
       case PoetryType.TANG_SHI:
       case PoetryType.SONG_SHI:
       case PoetryType.SONG_CI:
-        for (let i = 0; i < PoetCounter[source]; i += 1) {
-          Database.getJsonData(DatabaseStorages[source].locate.replace('{index}', String(i * 1000)), 'paragraphs', (sentences) => {
-            return this.checkAndAddNames(names, sentences);
+        const randoms = numSequenceRandoms(PoetCounter[source]);
+        console.error('randoms:', randoms);
+        for (let i = 0; i < randoms.length; i += 1) {
+          Database.getJsonData(DatabaseStorages[source].locate.replace('{index}', String(randoms[i] * 1000)), 'paragraphs', (sentence) => {
+            return this.checkAndAddNames(sentence);
           });
         }
         break;
@@ -65,85 +79,145 @@ export class NameGenerator {
         break;
     }
 
-    return names.map(name => name.toObject());
+    const names = this.names.map(name => name.toObject());
+    this.names = [];
+    this.uniqueNameSet = new Set<string>();
+    return names;
   }
 
-  private checkAndAddNames(names: Name[], sentences: string[]): boolean {
-    const { count, config } = this;
+  private checkAndAddNames(sentence: string): boolean {
+    const { config } = this;
     const { goodStrokeList } = config;
-    for (const sentence of sentences) {
-      let sentenceStr = sentence.trim();
 
-      // 获取每个单词的笔画数
-      const strokes: number[] = [];
-      for (const ch of sentenceStr) {
-        if (isChinese(ch)) {
-          strokes.push(getStrokeNumber(ch));
-        } else {
-          strokes.push(0);
-        }
+    const charStrokeMap: Map<number, number[]> = new Map<number, number[]>();
+
+    // 先整理出所有的文字笔画的集合
+
+    for(let index = 0; index<sentence.length; index++) {
+      const char = sentence[index];
+      if (isChinese(char)) {
+        const stroke = getStrokeNumber(char);
+        let arr = charStrokeMap.get(stroke) ;
+        charStrokeMap.set(stroke, Array.isArray(arr) ? [...arr, index] : [index]);
+      }
+    }
+
+    // 获取满足条件(吉利)的笔画数
+    for (const goodStroke of goodStrokeList) {
+      
+      // 如果没有存在第一个名的笔画. 直接进行下一次循环
+      let ming1IndexArray = charStrokeMap.get(goodStroke[0]);
+      if (!ming1IndexArray || ming1IndexArray.length === 0) {
+        continue;
       }
 
-      // 获取满足条件(吉利)的笔画数
-      for (const stroke of goodStrokeList) {
-        if (strokes.includes(stroke[0]) && strokes.includes(stroke[1])) {
-          const index0 = strokes.indexOf(stroke[0]);
-          const index1 = strokes.indexOf(stroke[1]);
+      ming1IndexArray = ming1IndexArray.sort((a, b) => a - b);
 
-          if (index0 < index1) {
-            const name0 = sentenceStr[index0];
-            const name1 = sentenceStr[index1];
+      // 单名
+      if (goodStroke[1] === 0) {
+        for (const index of ming1IndexArray) {
+          const babyName = sentence[index];
+          if (this.pushName(babyName, sentence, [index]) === false) {
+            return false;
+          }
+        }
+        continue;
+      }
 
-            console.error(name0 + name1);
+      // 复名
+      let ming2IndexArray = charStrokeMap.get(goodStroke[1]);
+      if (!ming2IndexArray || ming2IndexArray.length === 0) {
+        continue;
+      }
 
-            const babyName = name0 + name1;
-            const gender = this.getGender(babyName);
-             if (!gender) {
-              console.error('isBad?:', babyName);
-              return;
-            }
+      ming2IndexArray = ming2IndexArray.sort((a, b) => a - b);
+      for (let i = 0; i<ming1IndexArray.length; i++) {
+        for (let j = 0; j<ming2IndexArray.length; j++) {
 
-            // 取出这两个字
-            names.push(new Name(babyName, sentenceStr, [index0, index1], gender));
-
-            // 超出数量
-            if (names.length >= count) {
+          // 顺序不能改变
+          if (ming1IndexArray[i] < ming2IndexArray[j]) {
+            const babyName = sentence[ming1IndexArray[i]] + sentence[ming2IndexArray[j]];
+            if (this.pushName(babyName, sentence, [ming1IndexArray[i], ming2IndexArray[j]]) === false) {
               return false;
             }
           }
+          continue;
         }
       }
     }
   }
 
-  /**
-   * 获取性别. 其实主要是为了过滤一些无效的数据
-   * @param name 
-   */
-  private getGender(name: string): Gender {
+  private checkName(babyName: string): boolean {
     const { config } = this;
-    const { minStrokeCount, maxStrokeCount } = config;
+    const { minStrokeCount, maxStrokeCount, singleNameWeight } = config;
+
+    // 单名的权重
+    if (babyName.length === 1) {
+      if ((this.singleNameCount / this.uniqueNameSet.size) * 100 > singleNameWeight) {
+        console.error('拒绝单名');
+        return false;
+      }
+    }
+
+    // 不能跟自己的姓相同
+    if (config.surname === babyName) {
+      return false;
+    }
 
     // 过滤掉笔画
-    for( let char of name.split('')) {
+    for( let char of babyName.split('')) {
       const stroke = getStrokeNumber(char);
       if (stroke < minStrokeCount || stroke > maxStrokeCount) {
-        return null;
+        return false;
       }
     }
 
     // 过滤掉黑名单数据
-    if (this.containBadWord(name)) {
-      return null;
+    if (this.containBadWord(babyName)) {
+      return false;
     }
 
-    // 过滤掉不喜欢的名字
-    const gender = Database.namesDirectory[name];
+    return true;
+  }
+
+  private pushName(babyName: string, sentence: string, picks: number[]) {
+    console.error('babyName:', babyName);
+    const { count, config } = this;
+
+    // 超出生成的数量限制
+    if (this.names.length >= count) {
+      return false;
+    }
+  
+    const status = this.checkName(babyName);
+    if (!status) {
+      return;
+    }
+
+    const gender = Database.namesDirectory[babyName];
     if (!gender) {
-      return null;
+      return;
     }
 
-    return gender;
+    if (config.gender === Gender.GIRL || config.gender === Gender.BOY) {
+      if (gender !== config.gender) {
+        return;
+      }
+    }
+
+    if (this.uniqueNameSet.has(babyName)) {
+      return;
+    }
+
+    this.uniqueNameSet.add(babyName);
+    this.names.push(new Name(babyName, sentence, picks, gender));
+
+    // 单名统计
+    if (babyName.length === 1) {
+      this.singleNameCount++;
+    }
+
+    console.error('this.names:', this.names);
   }
 
   private containBadWord(name: string): boolean {

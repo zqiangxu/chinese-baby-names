@@ -21,6 +21,7 @@ export function checkSancaiGood(counts: number[], allowGeneral: boolean): boolea
 /**
  * 获取三才配置
  * @param counts 天地人 三才数值
+ * 对应的就是 转成 金木水 这种
  */
 export function getSancaiConfig(counts: number[]): string {
   let config = '';
@@ -33,7 +34,6 @@ export function getSancaiConfig(counts: number[]): string {
 /**
  * 获取三才类型
  * @param config
- * @returns 
  */
 export function getSancaiType(config: string): string {
   if (WUXING_GOODS.includes(config)) {
