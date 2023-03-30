@@ -5,11 +5,12 @@ import { Database, DatabaseStorages, PoetCounter } from '../utils/database';
 import { getStrokeNumber } from '../stroke/stroke';
 import { numSequenceRandoms } from '../utils/numSequenceRandoms';
 import { Gender } from '../enums/Gender';
+import { shuffle } from 'src/utils/shuffle';
 
 interface GeneratorConfig {
   // 姓
   surname: string;
-  source: PoetryType;
+  source: PoetryType[];
   goodStrokeList: number[][];
   // 最小笔画数
   minStrokeCount: number;
@@ -46,37 +47,41 @@ export class NameGenerator {
   }
 
   private batch(): NameObject[] {
-    const { source } = this.config;
-    switch (source) {
-      case PoetryType.SHI_JING:
-      case PoetryType.CHU_CI:
-        Database.getJsonData(DatabaseStorages[source].locate, 'content', (sentence) => {
-          return this.checkAndAddNames(sentence);
-        });
-        break;
-      case PoetryType.LUN_YU:
-        Database.getJsonData(DatabaseStorages[source].locate, 'paragraphs', (sentence) => {
-          return this.checkAndAddNames(sentence);
-        });
-        break;
-      case PoetryType.ZHOU_YI:
-        Database.getTextData(DatabaseStorages[source].locate, (sentence) => {
-          return this.checkAndAddNames(sentence);
-        });
-        break;
-      case PoetryType.TANG_SHI:
-      case PoetryType.SONG_SHI:
-      case PoetryType.SONG_CI:
-        const randoms = numSequenceRandoms(PoetCounter[source]);
-        console.error('randoms:', randoms);
-        for (let i = 0; i < randoms.length; i += 1) {
-          Database.getJsonData(DatabaseStorages[source].locate.replace('{index}', String(randoms[i] * 1000)), 'paragraphs', (sentence) => {
+    const sourceList = shuffle(this.config.source);
+
+    for (let i=0; i<sourceList.length; i++) {
+      const source = sourceList[i];
+      switch (source) {
+        case PoetryType.SHI_JING:
+        case PoetryType.CHU_CI:
+          Database.getJsonData(DatabaseStorages[source].locate, 'content', (sentence) => {
             return this.checkAndAddNames(sentence);
           });
-        }
-        break;
-      default:
-        break;
+          break;
+        case PoetryType.LUN_YU:
+          Database.getJsonData(DatabaseStorages[source].locate, 'paragraphs', (sentence) => {
+            return this.checkAndAddNames(sentence);
+          });
+          break;
+        case PoetryType.ZHOU_YI:
+          Database.getTextData(DatabaseStorages[source].locate, (sentence) => {
+            return this.checkAndAddNames(sentence);
+          });
+          break;
+        case PoetryType.TANG_SHI:
+        case PoetryType.SONG_SHI:
+        case PoetryType.SONG_CI:
+          const randoms = numSequenceRandoms(PoetCounter[source]);
+          console.error('randoms:', randoms);
+          for (let i = 0; i < randoms.length; i += 1) {
+            Database.getJsonData(DatabaseStorages[source].locate.replace('{index}', String(randoms[i] * 1000)), 'paragraphs', (sentence) => {
+              return this.checkAndAddNames(sentence);
+            });
+          }
+          break;
+        default:
+          break;
+      }
     }
 
     const names = this.names.map(name => name.toObject());
@@ -154,7 +159,6 @@ export class NameGenerator {
     // 单名的权重
     if (babyName.length === 1) {
       if ((this.singleNameCount / this.uniqueNameSet.size) * 100 > singleNameWeight) {
-        console.error('拒绝单名');
         return false;
       }
     }
@@ -181,7 +185,6 @@ export class NameGenerator {
   }
 
   private pushName(babyName: string, sentence: string, picks: number[]) {
-    console.error('babyName:', babyName);
     const { count, config } = this;
 
     // 超出生成的数量限制
