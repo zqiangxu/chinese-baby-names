@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/zqiangxu/baby-names/compare/v0.0.3...v0.0.4) (2023-03-31)
+
+
+### Features
+
+* 更新词库 ([df7f4f7](https://github.com/zqiangxu/baby-names/commit/df7f4f7d5b664051dcd0d7ae7db1a6b1e2c842db))
+
 ### [0.0.3](https://github.com/zqiangxu/baby-names/compare/v0.0.2...v0.0.3) (2023-03-31)
 
 
