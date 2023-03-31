@@ -2,9 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Gender } from '../enums/Gender';
 import { PoetryType } from '../enums/PoetryType';
-import { simplifiedToTraditional } from './convert';
-import { convertGender } from './gender';
-import { shuffle } from './shuffle';
+import { convertGender } from '../utils/gender';
+import { shuffle } from '../utils/shuffle';
 
 /**
  * 读取本地数据
@@ -71,10 +70,6 @@ export const DatabaseStorages: Record<
     type: StorageType.JSON,
     locate: 'lunyu/lunyu',
   },
-  [PoetryType.ZHOU_YI]: {
-    type: StorageType.TEXT,
-    locate: 'zhouyi/zhouyi',
-  },
   [PoetryType.TANG_SHI]: {
     type: StorageType.JSON,
     locate: 'poet.tang/poet.tang.{index}',
@@ -88,6 +83,29 @@ export const DatabaseStorages: Record<
     locate: 'ci.song/ci.song.{index}',
   },
 };
+
+interface GetJsonDataParams<T> {
+  /**
+   * json 文件路径
+   */
+  locate: string;
+  /**
+   * 获取诗句内容
+   * @param item 
+   */
+  getSentences: (item: T) => string[];
+  /**
+   * 获取诗句来源
+   * @param item 
+   */
+  getTitle: (item:T) => string;
+  /**
+   * 回调函数
+   * @param sentence 单条 sentence
+   * @param title 标题
+   */
+  callback: (sentence: string, title: string) => void | boolean 
+}
 
 export class Database {
   /**
@@ -105,29 +123,18 @@ export class Database {
    */
   public static strokeDirectory: Record<string, number> = Database.generateStrokeDirectory();
 
-  public static getJsonData(locate: string, contentKey: string, callback: (sentence: string) => void | boolean): void {
+  public static getJsonData<T>({ locate, getSentences, getTitle, callback }: GetJsonDataParams<T>): void {
     const data = require(`./database/${locate}.json`);
-    for (const item of shuffle(data))  {
-      for (const content of shuffle<string>(item[contentKey])) {
-        // 转繁体
-        const string = simplifiedToTraditional(content);
-        const isContinue = callback(string.trim());
+    for (const item of shuffle<T>(data))  {
+      const sentences = getSentences(item);
+      const title = getTitle(item);
+      for (const content of shuffle<string>(sentences)) {
+        // 转繁体 (不用转繁体了, 直接已经批量转换)
+        // const string = simplifiedToTraditional(content);
+        const isContinue = callback(content.trim(), title);
         if (isContinue === false) {
           return;
         }
-      }
-    };
-  }
-
-  public static getTextData(locate: string, callback: (sentence: string) => void | boolean): void {
-    const lines = readLocalData(`${locate}.txt`);
-    for(const line of shuffle(lines)) {
-      const startTime = Date.now();
-      const string = simplifiedToTraditional(line);
-      console.error('cost:', Date.now() - startTime + 'ms');
-      const isContinue = callback(string.trim());
-      if (isContinue === false) {
-         return;
       }
     };
   }

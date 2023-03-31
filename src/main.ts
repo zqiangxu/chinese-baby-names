@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { Gender } from './enums/Gender';
 import { PoetryType } from './enums/PoetryType';
 import { NameObject } from './name/name';
@@ -38,7 +37,6 @@ export class BabyName {
   }
 
   private constructor(config: GeneratorConfig) {
-    console.error('generator.....--------------------->');
     this.config = {
       dislikeWords: [],
       minStrokeCount: DEFAULT_MIN_STROKE_COUNT, 
@@ -64,14 +62,7 @@ export class BabyName {
       gender,
     }, count);
 
-    console.log('>>输出结果...:', names);
-    const stream = fs.createWriteStream('names.txt', { flags: 'a', encoding: 'utf-8' });
-    for (let name of names) {
-      stream.write(surname + name.name + ' ' + name.sentence + '\n');
-    }
-
-    stream.end();
-    console.log('>>输出完毕，请查看「names.txt」文件');;
+    console.log('generate success:', names);
     return names;
   }
 }

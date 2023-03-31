@@ -1,6 +1,6 @@
 import { checkSancaiGood } from '../wuxing/sancai';
-import { simplifiedToTraditional } from '../utils/convert';
-import { Database } from '../utils/database';
+import { simplifiedToTraditional } from '../utils/opencc';
+import { Database } from '../name/database';
 import { FATE_COUNT, STROKE_BADS, STROKE_GENERALS, STROKE_GOODS } from './constant';
 import { calcWuge } from 'src/wuxing/wuge';
 
@@ -35,12 +35,10 @@ export function getGoodStrokeList(surname: string, allowGeneral: boolean): [numb
    * 总格数理（81数理）是日本人熊崎健翁依据姓名的笔画数和一定规则建立起来天格、地格、人格、总格、外格等五格数理关系，并以其所谓的 81 数理，来推算人的各方面运势。
    * @see {@link https://baike.baidu.com/item/%E6%80%BB%E6%A0%BC%E6%95%B0%E7%90%86/1815675?fromtitle=81%E6%95%B0%E7%90%86&fromid=23720201&fr=aladdin}
    */
-  console.error(xing1Stroke, xing2Stroke);
   for (let i = 1; i < FATE_COUNT; i++) {
     
     // 可能是单名
     if (isGoodStroke(xing1Stroke, xing2Stroke, i, 0, allowGeneral)){
-      console.error('stroke???');
       strokeList.push([i, 0]);
     }
 
@@ -52,7 +50,6 @@ export function getGoodStrokeList(surname: string, allowGeneral: boolean): [numb
     }
   }
 
-  console.log('>>' + JSON.stringify(strokeList));
   return strokeList;
 }
 
@@ -74,11 +71,9 @@ export function isGoodStroke(
   const wuge = calcWuge(xing1Stroke, xing2Stroke, ming1Stroke, ming2Stroke);
   const { tian, ren, di, zong } = wuge;
 
-  console.error(wuge);
   // 检测笔画是否为 大吉
   // 不同的笔画，被划分为吉、半吉、凶三组
   if (STROKE_GOODS.includes(ren) && STROKE_GOODS.includes(di) && STROKE_GOODS.includes(zong)) {
-    console.error('吉:', wuge);
     // 检查三才
     if (checkSancaiGood([tian, ren, di], allowGeneral)) {
       return true;

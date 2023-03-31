@@ -28,10 +28,10 @@ function simplifiedToTraditional(resourcePath) {
 // }
 // simplifiedToTraditional(path.join(__dirname, '../src/database/lunyu/lunyu.json'));
 // 108
-for (let i = 170; i < 180; i++) {
-  simplifiedToTraditional(path.join(__dirname, '../src/database/poet.song/poet.song.' + i * 1000 + '.json'));
-}
-// for (let i = 0; i < 58; i++) {
-//   simplifiedToTraditional(path.join(__dirname, '../src/database/poet.tang/poet.tang.' + i * 1000 + '.json'));
+// for (let i = 179; i < 180; i++) {
+//   simplifiedToTraditional(path.join(__dirname, '../src/database/poet.song/poet.song.' + i * 1000 + '.json'));
 // }
+for (let i = 50; i < 58; i++) {
+  simplifiedToTraditional(path.join(__dirname, '../src/database/poet.tang/poet.tang.' + i * 1000 + '.json'));
+}
 // simplifiedToTraditional(path.join(__dirname, '../src/database/shijing/shijing.json'));

@@ -28,7 +28,7 @@ function simplifiedToTraditional(resourcePath) {
 // }
 // simplifiedToTraditional(path.join(__dirname, '../src/database/lunyu/lunyu.json'));
 // 108
-for (let i = 200; i < 210; i++) {
+for (let i = 209; i < 210; i++) {
   simplifiedToTraditional(path.join(__dirname, '../src/database/poet.song/poet.song.' + i * 1000 + '.json'));
 }
 // for (let i = 0; i < 58; i++) {
