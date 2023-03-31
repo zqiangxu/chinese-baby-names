@@ -62,7 +62,6 @@ export class BabyName {
       gender,
     }, count);
 
-    console.log('generate success:', names);
     return names;
   }
 }

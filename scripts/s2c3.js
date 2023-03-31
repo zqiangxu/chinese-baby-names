@@ -31,8 +31,8 @@ function simplifiedToTraditional(resourcePath) {
 // for (let i = 149; i < 150; i++) {
 //   simplifiedToTraditional(path.join(__dirname, '../src/database/poet.song/poet.song.' + i * 1000 + '.json'));
 // }
-for (let i = 20; i < 30; i++) {
-  simplifiedToTraditional(path.join(__dirname, '../src/database/poet.tang/poet.tang.' + i * 1000 + '.json'));
+for (let i = 250; i < 255; i++) {
+  simplifiedToTraditional(path.join(__dirname, '../src/database/poet.song/poet.song.' + i * 1000 + '.json'));
 }
 // for (let i = 0; i < 58; i++) {
 //   simplifiedToTraditional(path.join(__dirname, '../src/database/poet.tang/poet.tang.' + i * 1000 + '.json'));
