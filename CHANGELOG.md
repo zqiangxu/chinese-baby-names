@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/zqiangxu/baby-names/compare/v0.0.2...v0.0.3) (2023-03-31)
+
+
+### Features
+
+* 修改流水线 ([dd635cf](https://github.com/zqiangxu/baby-names/commit/dd635cfdc4f6ba2545234c6c40b6a04ca9cdc7d1))
+* 更新 npmrc ([c6796f1](https://github.com/zqiangxu/baby-names/commit/c6796f126f2ac6f69fcada3caae7ad4fa854aa74))
+
 ### [0.0.2](https://github.com/zqiangxu/baby-names/compare/v0.0.1...v0.0.2) (2023-03-31)
 
 
