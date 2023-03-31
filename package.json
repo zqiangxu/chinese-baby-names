@@ -1,6 +1,6 @@
 {
   "name": "baby-names",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1",
   "description": "chinese baby names",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
