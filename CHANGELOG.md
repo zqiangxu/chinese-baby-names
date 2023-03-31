@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/zqiangxu/baby-names/compare/v0.0.5...v0.0.6) (2023-03-31)
+
+
+### Bug Fixes
+
+* 修复sex的BUG ([e016127](https://github.com/zqiangxu/baby-names/commit/e0161278ef10e7e122883e67551bf8f571494d92))
+
 ### [0.0.5](https://github.com/zqiangxu/baby-names/compare/v0.0.4...v0.0.5) (2023-03-31)
 
 
