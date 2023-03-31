@@ -1,8 +1,9 @@
 {
   "name": "baby-names",
-  "version": "1.0.0",
+  "version": "0.0.1-beta.0",
   "description": "chinese baby names",
   "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
   "scripts": {
     "test": "node lib/index.js",
     "build": "rollup -c rollup.config.js",
@@ -12,6 +13,11 @@
     "type": "git",
     "url": "git+https://github.com/zqiangxu/baby-names.git"
   },
+  "files": [
+    "package.json",
+    "README.md",
+    "lib"
+  ],
   "keywords": [
     "chinese",
     "baby",
