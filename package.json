@@ -7,7 +7,8 @@
   "scripts": {
     "test": "node lib/index.js",
     "build": "rollup -c rollup.config.js",
-    "dev": "rollup -c rollup.config.js -w"
+    "dev": "rollup -c rollup.config.js -w",
+    "release": "standard-version && git push --follow-tags origin"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "rollup": "^3.20.2",
-    "rollup-plugin-copy": "^3.4.0"
+    "rollup-plugin-copy": "^3.4.0",
+    "standard-version": "^9.5.0"
   }
 }
