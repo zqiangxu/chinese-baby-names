@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/zqiangxu/baby-names/compare/v0.0.1...v0.0.2) (2023-03-31)
+
+
+### Features
+
+* 修改包名 ([ab83de0](https://github.com/zqiangxu/baby-names/commit/ab83de0cd4d959855c18d0136b6243b5b4cf773e))
+* 修改名字 ([165d9f3](https://github.com/zqiangxu/baby-names/commit/165d9f350061b6d07763a0fd054be506b771e7e4))
+* 修改流水线 ([17ba66b](https://github.com/zqiangxu/baby-names/commit/17ba66bba4e6d87cd7915f498e1251157deb7c41))
+* 修改流水线 ([49776e9](https://github.com/zqiangxu/baby-names/commit/49776e991bac2335585a1a837f4b489374904d7c))
+* 完成第一遍所有的诗歌转成繁体 ([f92a5e9](https://github.com/zqiangxu/baby-names/commit/f92a5e9c6a93bce1909e83ca7160b6ea56431416))
+
 ### 0.0.1 (2023-03-31)
 
 
