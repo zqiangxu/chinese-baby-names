@@ -4,6 +4,7 @@
 name: Node.js Package
 
 on:
+  # 创建 release 的时候才发包
   release:
     types: [created]
 
@@ -29,4 +30,4 @@ jobs:
       - run: npm ci
       - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_ACCESS_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
