@@ -22,16 +22,20 @@ function simplifiedToTraditional(resourcePath) {
   });
 }
 
-// simplifiedToTraditional(path.join(__dirname, '../src/database/chuci/chuci.json'));
-// for (let i = 0; i < 22; i++) {
-//   simplifiedToTraditional(path.join(__dirname, '../src/database/ci.song/ci.song.' + i * 1000 + '.json'));
-// }
-// simplifiedToTraditional(path.join(__dirname, '../src/database/lunyu/lunyu.json'));
-// 108
-for (let i = 232; i < 240; i++) {
+simplifiedToTraditional(path.join(__dirname, '../src/database/chuci/chuci.json'));
+
+for (let i = 0; i < 22; i++) {
+  simplifiedToTraditional(path.join(__dirname, '../src/database/ci.song/ci.song.' + i * 1000 + '.json'));
+}
+
+simplifiedToTraditional(path.join(__dirname, '../src/database/lunyu/lunyu.json'));
+
+for (let i = 0; i < 255; i++) {
   simplifiedToTraditional(path.join(__dirname, '../src/database/poet.song/poet.song.' + i * 1000 + '.json'));
 }
-// for (let i = 8; i < 10; i++) {
-//   simplifiedToTraditional(path.join(__dirname, '../src/database/poet.tang/poet.tang.' + i * 1000 + '.json'));
-// }
-// simplifiedToTraditional(path.join(__dirname, '../src/database/shijing/shijing.json'));
+
+for (let i = 8; i < 58; i++) {
+  simplifiedToTraditional(path.join(__dirname, '../src/database/poet.tang/poet.tang.' + i * 1000 + '.json'));
+}
+
+simplifiedToTraditional(path.join(__dirname, '../src/database/shijing/shijing.json'));
