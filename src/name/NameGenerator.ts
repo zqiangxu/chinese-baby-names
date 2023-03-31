@@ -117,11 +117,21 @@ export class NameGenerator {
   }
 
   private pickNames(): NameObject[] {
+    const { config } = this;
     const names: NameObject[] = [];
 
+    const aiNames = Database.aiNames.filter((item) => {
+      if (config.gender === Gender.BOY) {
+        return item.gender === Gender.BOY;
+      } else if (config.gender === Gender.GIRL) {
+        return item.gender === Gender.GIRL;
+      }
+      return true;
+    })
+
     for (let i = 0; i < this.count; i++) {
-      const index = Math.floor(Math.random() * Database.aiNames.length);
-      const { name, gender } = Database.aiNames[index];
+      const index = Math.floor(Math.random() * aiNames.length);
+      const { name, gender } = aiNames[index];
       names.push({
         name,
         sentence: '',
