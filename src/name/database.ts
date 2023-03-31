@@ -107,6 +107,11 @@ interface GetJsonDataParams<T> {
   callback: (sentence: string, title: string) => void | boolean 
 }
 
+export interface AINameData {
+  name: string;
+  gender: Gender;
+}
+
 export class Database {
   /**
    * 拆字字典
@@ -122,6 +127,11 @@ export class Database {
    * 笔画字典
    */
   public static strokeDirectory: Record<string, number> = Database.generateStrokeDirectory();
+
+  /**
+   * ai名字字典
+   */
+  public static aiNames: AINameData[] = Database.generateAINamesDirectory();
 
   public static getJsonData<T>({ locate, getSentences, getTitle, callback }: GetJsonDataParams<T>): void {
     const data = require(`./database/${locate}.json`);
@@ -181,5 +191,25 @@ export class Database {
     });
  
     return directory; 
+  }
+
+  private static generateAINamesDirectory(): AINameData[] {
+    const lines = readLocalData('ai-names.dat');
+    const names: AINameData[] = [];
+ 
+    lines.forEach((line) => {
+       const blocks = line.split(/\s+/);
+       if (blocks.length < 2) {
+          return;
+       }
+       const [name, gender] = blocks;
+
+       names.push({
+        name: name.trim(),
+        gender: convertGender(gender)
+       });
+    });
+ 
+    return names; 
   }
 }

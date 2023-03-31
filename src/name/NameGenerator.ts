@@ -48,6 +48,10 @@ export class NameGenerator {
   }
 
   private batch(): NameObject[] {
+    return this.pickNames();
+  }
+
+  public oldBatch(): NameObject[] {
     const sourceList = shuffle(this.config.source);
 
     for (let i = 0; i < sourceList.length; i++) {
@@ -109,6 +113,24 @@ export class NameGenerator {
     const names = this.names.map((name) => name.toObject());
     this.names = [];
     this.uniqueNameSet = new Set<string>();
+    return names;
+  }
+
+  private pickNames(): NameObject[] {
+    const names: NameObject[] = [];
+
+    for (let i = 0; i < this.count; i++) {
+      const index = Math.floor(Math.random() * Database.aiNames.length);
+      const { name, gender } = Database.aiNames[index];
+      names.push({
+        name,
+        sentence: '',
+        gender,
+        picks: [],
+        title: '',
+      });
+    }
+
     return names;
   }
 
