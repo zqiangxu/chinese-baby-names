@@ -6,7 +6,7 @@ const names = BabyName.generate({
   count: 20,
   allowGeneral: false,
   singleNameWeight: 10,
-  gender: Gender.COMMON,
+  gender: Gender.BOY,
 });
 
 console.log(names);
