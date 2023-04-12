@@ -1,6 +1,6 @@
 import { getStrokeNumber, getStrokeType } from '../stroke/stroke';
 import { simplifiedToTraditional } from '../utils/opencc';
-import { getSancaiConfig } from './sancai';
+import { getSancaiConfig, getSancaiType } from './sancai';
 
 /**
  * 总格数理（81数理）
@@ -27,6 +27,7 @@ interface SancaiWuge extends Wuge{
   zongStrokeType: string;
   waiStrokeType: string;
   sancai: string;
+  sancaiType: string;
 }
 
 /**
@@ -39,10 +40,10 @@ export function calcSancaiWuge(surname: string, name: string): SancaiWuge {
   const nameTraditional = simplifiedToTraditional(name);
 
   const xing1Stroke = getStrokeNumber(surnameTraditional[0]);
-  const xing2Stroke = surnameTraditional ? getStrokeNumber(surnameTraditional[1]) : 0;
+  const xing2Stroke = surnameTraditional && surnameTraditional.length > 1 ? getStrokeNumber(surnameTraditional[1]) : 0;
 
   const ming1Stroke = getStrokeNumber(nameTraditional[0]);
-  const ming2Stroke = nameTraditional ? getStrokeNumber(nameTraditional[1]) : 0;
+  const ming2Stroke = nameTraditional && nameTraditional.length > 1 ? getStrokeNumber(nameTraditional[1]) : 0;
 
   const tian = getTianGe(xing1Stroke, xing2Stroke, ming1Stroke, ming2Stroke);
   const ren = getRenGe(xing1Stroke, xing2Stroke, ming1Stroke, ming2Stroke);
@@ -62,6 +63,7 @@ export function calcSancaiWuge(surname: string, name: string): SancaiWuge {
     wai,
     waiStrokeType: getStrokeType(wai),
     sancai,
+    sancaiType: getSancaiType(sancai),
   };
 }
 

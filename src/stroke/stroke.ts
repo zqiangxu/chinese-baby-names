@@ -100,7 +100,7 @@ export function getStrokeType(stroke: number): string {
   } else if (STROKE_GENERALS.includes(stroke)) {
     return '中吉';
   } else if (STROKE_BADS.includes(stroke)) {
-    return '凶';
+    return '小吉';
   } else {
     return '';
   }
