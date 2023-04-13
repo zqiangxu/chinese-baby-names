@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/zqiangxu/baby-names/compare/v0.0.6...v0.0.7) (2023-04-12)
+
+
+### Features
+
+* 暴漏出更多的接口 ([7d1932f](https://github.com/zqiangxu/baby-names/commit/7d1932fabc44a3d93e59b56f3650e01cfeda7692))
+
 ### [0.0.6](https://github.com/zqiangxu/baby-names/compare/v0.0.5...v0.0.6) (2023-03-31)
 
 

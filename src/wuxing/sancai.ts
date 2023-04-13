@@ -41,7 +41,7 @@ export function getSancaiType(config: string): string {
   } else if (WUXING_GENERALS.includes(config)) {
     return '中吉';
   } else if (WUXING_BADS.includes(config)) {
-    return '凶';
+    return '小吉';
   } else {
     return '';
   }
